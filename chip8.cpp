@@ -12,7 +12,8 @@
 #define NN (opcode & 0x00FF)
 #define N (opcode & 0x000F)
 
-chip8::chip8(std::string fileName) {
+chip8::chip8(std::string fileName)
+{
     const uint8_t font[] = {
         0xF0, 0x90, 0x90, 0x90, 0xF0,	// 0
         0x20, 0x60, 0x20, 0x20, 0x70,	// 1
@@ -52,10 +53,13 @@ chip8::chip8(std::string fileName) {
     memset(this->stack, 0, sizeof(this->stack));
     memset(this->V, 0, sizeof(this->V));
     PC = 0x200;
-    SP = 0;   
+    SP = 0;
+
+    srand(time(NULL));
 }
 
-void chip8::run_cycle() {
+void chip8::run_cycle()
+{
     // Decrement timers
     this->delayTimer = std::max(this->delayTimer - 1, 0);
     this->soundTimer = std::max(this->soundTimer - 1, 0);
@@ -158,7 +162,6 @@ void chip8::run_cycle() {
             this->PC = this->V[0] + NNN;
             break;
         case 0xC000: // Cxnn - RND Vx, byte
-            srand(time(NULL));
             this->V[X] = (rand() % 256) & NN;
             break;
         case 0xD000: { // Dxyn - DRW Vx, Vy, nibble

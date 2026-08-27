@@ -7,7 +7,8 @@
 #define WIDTH 640
 #define HEIGHT 320
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     if (argc < 2) {
         std::cerr << "Usage: ./CHIP8.exe \"PATH\\TO\\FILENAME\"" << std::endl;
         return 1;
