@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath>
+#include <vector>
 #include <SDL3/SDL.h>
 
 #include "chip8.hpp"
@@ -30,6 +31,23 @@ int main(int argc, char *argv[])
         return 1;
     }
     SDL_SetRenderLogicalPresentation(renderer, WIDTH, HEIGHT, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+
+    SDL_AudioSpec audioSpec;
+    audioSpec.format = SDL_AUDIO_S16;
+    audioSpec.channels = 1;
+    audioSpec.freq = 44100;
+    SDL_AudioStream *audioStream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &audioSpec, NULL, NULL);
+    if (!audioStream) {
+        std::cerr << "Could not open audio stream: " << SDL_GetError() << std::endl;
+        return 1;
+    }
+    SDL_ResumeAudioStreamDevice(audioStream);
+
+    float soundPhase = 0.0f;
+    constexpr float toneHz = 440.0f;
+    constexpr float sampleRate = 44100.0f;
+    constexpr int16_t amplitude = 4000;
+    constexpr int samplesPerFrame = (int)(sampleRate / 60.0f);
 
     SDL_Event windowEvent;
     bool running = true;
@@ -93,6 +111,16 @@ int main(int argc, char *argv[])
 
         CHIP8.run_cycle();
 
+        std::vector<int16_t> soundSamples(samplesPerFrame);
+        for (int i = 0; i < samplesPerFrame; ++i) {
+            soundSamples[i] = CHIP8.isSoundActive() ? (soundPhase < 0.5f ? amplitude : -amplitude) : 0;
+            soundPhase += toneHz / sampleRate;
+            if (soundPhase >= 1.0f) {
+                --soundPhase;
+            }
+        }
+        SDL_PutAudioStreamData(audioStream, soundSamples.data(), samplesPerFrame * (int)sizeof(int16_t));
+
         SDL_RenderClear(renderer);
         SDL_FRect square = {.x = 0, .y = 0, .w = 10, .h = 10};
         for (uint8_t i = 0; i < 32; ++i) {
@@ -119,6 +147,7 @@ int main(int argc, char *argv[])
         SDL_Delay(std::max(floor(16.666f - elapsedMS), 0.0));
     }
 
+    SDL_DestroyAudioStream(audioStream);
     SDL_DestroyWindow(window);
     SDL_Quit();
 

@@ -14,7 +14,7 @@
 
 chip8::chip8(std::string fileName)
 {
-    const uint8_t font[] = {
+    constexpr uint8_t font[] = {
         0xF0, 0x90, 0x90, 0x90, 0xF0,	// 0
         0x20, 0x60, 0x20, 0x20, 0x70,	// 1
         0xF0, 0x10, 0xF0, 0x80, 0xF0,	// 2
@@ -253,4 +253,9 @@ void chip8::run_cycle()
             std::cerr << "Unknown opcode: " << std::hex << opcode << std::endl;
             exit(1);
     }
+}
+
+bool chip8::isSoundActive()
+{
+    return this->soundTimer > 1;
 }

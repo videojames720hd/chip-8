@@ -7,6 +7,7 @@ public:
 
     bool display[32][64];
     bool keypad[16];
+    bool isSoundActive();
 private:
     uint16_t PC; // Program Counter
     uint16_t I; // Index Register
