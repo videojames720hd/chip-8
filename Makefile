@@ -4,8 +4,11 @@ OPT = -O2
 
 CFLAGS = -std=c++17 -Wall ${OPT} -lSDL3
 
-${EXEC}:
-	${CC} ${CFLAGS} *.cpp -o ${EXEC}
+SRC = $(wildcard *.cpp)
+HDR = $(wildcard *.hpp)
+
+${EXEC}: ${SRC} ${HDR}
+	${CC} ${CFLAGS} ${SRC} -o ${EXEC}
 
 .PHONY: clean
 
