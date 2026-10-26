@@ -2,10 +2,10 @@ EXEC = CHIP8
 CC = g++
 OPT = -O2
 
-CFLAGS = -std=c++17 -Wall ${OPT} -lSDL3
+CFLAGS = -std=c++17 -Wall ${OPT} -Iinclude -lSDL3
 
-SRC = $(wildcard *.cpp)
-HDR = $(wildcard *.hpp)
+SRC = $(wildcard src/*.cpp)
+HDR = $(wildcard include/*.hpp)
 
 ${EXEC}: ${SRC} ${HDR}
 	${CC} ${CFLAGS} ${SRC} -o ${EXEC}
